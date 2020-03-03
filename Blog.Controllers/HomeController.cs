@@ -8,14 +8,15 @@
 
     public class HomeController : Controller
     {
-        private readonly IArticleService articleService;
+        private readonly IArticleService _articleService;
 
-        public HomeController()
-            => this.articleService = new ArticleService();
-
+        public HomeController(IArticleService articleService)
+        {
+            _articleService = articleService;
+        }
         public async Task<IActionResult> Index()
         {
-            var articles = await this.articleService.All(pageSize: 3);
+            var articles = await _articleService.All(pageSize: 3);
 
             return this.View(articles);
         }

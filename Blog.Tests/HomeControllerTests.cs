@@ -15,7 +15,7 @@ namespace Blog.Tests
         public void AboutShouldReturnViewResult()
         {
             // ARRANGE
-            HomeController homeController = new HomeController();
+            HomeController homeController = new HomeController(null);
 
             // ACT
             IActionResult result = homeController.About();
@@ -28,7 +28,7 @@ namespace Blog.Tests
         public void PrivacyShouldReturnPrivacyViewModelWithCorrectLoggedInUsername()
         {
             // ARRANGE
-            HomeController homeController = new HomeController();
+            HomeController homeController = new HomeController(null);
             homeController.ControllerContext = new ControllerContext()
             {
                 HttpContext = new DefaultHttpContext()
