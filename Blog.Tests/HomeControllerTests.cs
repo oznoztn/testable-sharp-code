@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 using Blog.Controllers;
 using Blog.Controllers.Models;
+using Blog.Services.Models;
+using Blog.Tests.Fakes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -47,6 +51,31 @@ namespace Blog.Tests
             var viewResult = Assert.IsType<ViewResult>(result);
             var privacyViewModel = Assert.IsType<PrivacyViewModel>(viewResult.Model);
             Assert.Equal("test_user", privacyViewModel.Username);
+        }
+
+        // Artýk void döndermiyor dikkat et.
+        // Çünkü içeride await keyword'ünü kullanmamýz gerekiyor.
+        // Test metodunu signatürü de buna göre düzenleniyor.
+        // xUnit bunu destekliyor, diðerlerini bilmem.
+        [Fact]
+        public async Task IndexShouldReturnViewResultWithCorrectViewModel()
+        {
+            // ACT
+            var homeController = new HomeController(new FakeAarticleService());
+
+            // ARRANGE
+            // Asenkron olan bir metodu test ettiðimize dikkat et:
+            var result = await homeController.Index();
+
+            // ASSERT
+            var viewResult = Assert.IsType<ViewResult>(result);
+
+            // Because of the IEnumerable<T>
+            //  Do not use Assert.IsType<IEnumerable<ArticleListingServiceModel>>, 
+            //    (A list of item instead would be OK)
+            var model = Assert.IsAssignableFrom<IEnumerable<ArticleListingServiceModel>>(viewResult.Model);
+
+            Assert.Equal(3, model.ToList().Count);
         }
     }
 }
