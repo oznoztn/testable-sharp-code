@@ -61,7 +61,7 @@ namespace Blog.Tests
         public async Task IndexShouldReturnViewResultWithCorrectViewModel()
         {
             // ACT
-            var homeController = new HomeController(new FakeAarticleService());
+            var homeController = new HomeController(new FakeArticleService());
 
             // ARRANGE
             // Asenkron olan bir metodu test ettiðimize dikkat et:

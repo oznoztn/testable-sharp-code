@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Blog.Controllers;
+using Blog.Tests.Fakes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Xunit;
@@ -16,7 +17,7 @@ namespace Blog.Tests
         public async Task ChangeProfilePictureShouldReturnBadRequestWhenPictureUrlIsNull()
         {
             // arrange
-            UsersController usersController = new UsersController();
+            UsersController usersController = new UsersController(new FakeImageService());
 
             // act
             var result = await usersController.ChangeProfilePicture(null);
@@ -32,7 +33,7 @@ namespace Blog.Tests
             const string pictureUrl = "test";
             const string username = "test_user";
 
-            var usersCtrl = new UsersController();
+            var usersCtrl = new UsersController(new FakeImageService());
 
             // REQUIREMENT I : Create a replacement for this.User.Identity
             usersCtrl.ControllerContext = new ControllerContext()

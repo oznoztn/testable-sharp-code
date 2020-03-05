@@ -9,6 +9,13 @@
 
     public class UsersController : Controller
     {
+        private readonly IImageService _imageService;
+
+        public UsersController(IImageService imageService)
+        {
+            _imageService = imageService;
+        }
+
         private const string UserImageDestination = @"Images\Users\{0}";
         private const string ImageContentType = "image/jpeg";
 
@@ -36,7 +43,7 @@
 
             var userImageDestination = string.Format(UserImageDestination, this.User.Identity.Name);
 
-            await ImageService.UpdateImage(pictureUrl, userImageDestination);
+            await _imageService.UpdateImage(pictureUrl, userImageDestination);
 
             return this.Ok();
         }

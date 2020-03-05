@@ -57,7 +57,9 @@
                 typeof(HomeController).Assembly);
 
             services
-                .AddTransient<IArticleService, ArticleService>();
+                .AddTransient<IArticleService, ArticleService>()
+                .AddTransient<IImageService, ImageService>();
+
 
             services
                 .AddControllersWithViews(options => options

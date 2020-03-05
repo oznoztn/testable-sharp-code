@@ -6,13 +6,9 @@
     using SixLabors.ImageSharp;
     using SixLabors.ImageSharp.Processing;
 
-    public static class ImageService
+    public class ImageService : IImageService
     {
-        public static async Task UpdateImage(
-            string imageUrl, 
-            string destination, 
-            int? width = null,
-            int? height = null)
+        public async Task UpdateImage(string imageUrl, string destination, int? width = null, int? height = null)
         {
             var webClient = new WebClient();
 

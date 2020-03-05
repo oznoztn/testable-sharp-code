@@ -8,7 +8,7 @@ using Blog.Services.Models;
 
 namespace Blog.Tests.Fakes
 {
-    public class FakeAarticleService : IArticleService
+    public class FakeArticleService : IArticleService
     {
         public async Task<IEnumerable<ArticleListingServiceModel>> All(int page = 1, int pageSize = ServicesConstants.ArticlesPerPage, bool publicOnly = true)
         {
