@@ -1,7 +1,4 @@
-﻿using System.Runtime.CompilerServices;
-
-[assembly: InternalsVisibleTo("Blog.Tests")]
-namespace Blog.Services
+﻿namespace Blog.Services
 {
     using System.IO;
     using System.Net;
