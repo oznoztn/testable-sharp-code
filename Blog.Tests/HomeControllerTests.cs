@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Blog.Controllers;
 using Blog.Controllers.Models;
 using Blog.Services.Models;
+using Blog.Tests.Factories;
 using Blog.Tests.Fakes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -32,17 +33,11 @@ namespace Blog.Tests
         public void PrivacyShouldReturnPrivacyViewModelWithCorrectLoggedInUsername()
         {
             // ARRANGE
-            HomeController homeController = new HomeController(null);
-            homeController.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext()
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>()
-                    {
-                        new Claim(ClaimTypes.Name, "test_user")
-                    }))
-                }
-            };
+            const string username = "test_user";
+
+            HomeController homeController =
+                ControllerFactory<HomeController>
+                    .WithClaimPrincipal(new HomeController(null), username);
 
             // ACT
             IActionResult result = homeController.Privacy();

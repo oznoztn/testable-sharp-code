@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Blog.Controllers;
+using Blog.Tests.Factories;
 using Blog.Tests.Fakes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -33,19 +34,9 @@ namespace Blog.Tests
             const string pictureUrl = "test";
             const string username = "test_user";
 
-            var usersCtrl = new UsersController(new FakeImageService());
-
-            // REQUIREMENT I : Create a replacement for this.User.Identity
-            usersCtrl.ControllerContext = new ControllerContext()
-            {
-                HttpContext = new DefaultHttpContext()
-                {
-                    User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>()
-                    {
-                        new Claim(ClaimTypes.Name, "test_user")
-                    }))
-                }
-            };
+            var usersCtrl =
+                ControllerFactory<UsersController>
+                    .WithClaimPrincipal(new UsersController(new FakeImageService()), username);
 
             // act
             var result = await usersCtrl.ChangeProfilePicture(pictureUrl);
