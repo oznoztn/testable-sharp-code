@@ -30,7 +30,21 @@ namespace Blog.Tests
         {
             // arrange
             const string pictureUrl = "test";
+            const string username = "test_user";
+
             var usersCtrl = new UsersController();
+
+            // REQUIREMENT I : Create a replacement for this.User.Identity
+            usersCtrl.ControllerContext = new ControllerContext()
+            {
+                HttpContext = new DefaultHttpContext()
+                {
+                    User = new ClaimsPrincipal(new ClaimsIdentity(new List<Claim>()
+                    {
+                        new Claim(ClaimTypes.Name, "test_user")
+                    }))
+                }
+            };
 
             // act
             var result = await usersCtrl.ChangeProfilePicture(pictureUrl);
