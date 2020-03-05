@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Blog.Controllers\Blog.Controllers.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Extensions\" />
+  </ItemGroup>
+
 </Project>
