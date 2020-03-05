@@ -1,4 +1,7 @@
-﻿namespace Blog.Services
+﻿using System.Runtime.CompilerServices;
+
+[assembly: InternalsVisibleTo("Blog.Tests")]
+namespace Blog.Services
 {
     using System.IO;
     using System.Net;
@@ -31,7 +34,8 @@
             image.SaveAsJpeg(output);
         }
 
-        private static (int width, int height) CalculateOptimalSize(
+        // Internal for testing
+        internal (int width, int height) CalculateOptimalSize(
             int? width,
             int? height,
             int originalWidth,
@@ -61,7 +65,7 @@
             {
                 height = originalHeight;
             }
-
+            
             return (width.Value, height.Value);
         }
     }
