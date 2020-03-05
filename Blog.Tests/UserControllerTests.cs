@@ -4,7 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Blog.Controllers;
-using Blog.Tests.Factories;
+using Blog.Tests.Extensions;
 using Blog.Tests.Fakes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -34,10 +34,10 @@ namespace Blog.Tests
             const string pictureUrl = "test";
             const string username = "test_user";
 
-            var usersCtrl =
-                ControllerFactory<UsersController>
-                    .WithClaimPrincipal(new UsersController(new FakeImageService()), username);
-
+            var usersCtrl = 
+                new UsersController(new FakeImageService())
+                    .WithClaimPrincipal(username);
+            
             // act
             var result = await usersCtrl.ChangeProfilePicture(pictureUrl);
 

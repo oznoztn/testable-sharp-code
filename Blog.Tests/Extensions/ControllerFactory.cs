@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Security.Claims;
-using System.Text;
-using Blog.Controllers;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Blog.Tests.Factories
+namespace Blog.Tests.Extensions
 {
-    public static class ControllerFactory<TController> where TController : Controller
+    public static class ControllerExtensions
     {
         /// <summary>
-        /// Kontrol için verilen kullanıcı adına sahip yetkili tahsis eder.
-        /// Bu kullanıcı yalnızca ClaimTypes.Name tipinde bir claim'e sahiptir.
+        /// Kontrolün yetkilisini set eder. Kullanıcı yalnızca ClaimTypes.Name tipinde bir claim'e sahip olur.
         /// </summary>
         /// <param name="controller"></param>
         /// <param name="username"></param>
-        public static TController WithClaimPrincipal(TController controller, string username)
+        public static TController WithClaimPrincipal<TController>(this TController controller, string username) where TController : Controller
         {
             controller.ControllerContext = new ControllerContext()
             {

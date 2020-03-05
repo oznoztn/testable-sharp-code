@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Blog.Controllers;
 using Blog.Controllers.Models;
 using Blog.Services.Models;
-using Blog.Tests.Factories;
+using Blog.Tests.Extensions;
 using Blog.Tests.Fakes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -35,9 +35,9 @@ namespace Blog.Tests
             // ARRANGE
             const string username = "test_user";
 
-            HomeController homeController =
-                ControllerFactory<HomeController>
-                    .WithClaimPrincipal(new HomeController(null), username);
+            HomeController homeController = 
+                new HomeController(null)
+                    .WithClaimPrincipal(username);
 
             // ACT
             IActionResult result = homeController.Privacy();
