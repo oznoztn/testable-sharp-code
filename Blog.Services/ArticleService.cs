@@ -13,10 +13,12 @@
 
     public class ArticleService : IArticleService
     {
-        private readonly BlogDbContext db;
+        private readonly BlogDbContext _context;
 
-        public ArticleService() 
-            => this.db = new BlogDbContext();
+        public ArticleService(BlogDbContext context)
+        {
+            _context = context;
+        }
 
         public async Task<IEnumerable<ArticleListingServiceModel>> All(
             int page = 1,
@@ -30,7 +32,7 @@
             bool publicOnly = true)
             where TModel : class
         {
-            var query = this.db.Articles.AsQueryable();
+            var query = this._context.Articles.AsQueryable();
 
             if (publicOnly)
             {
@@ -46,34 +48,40 @@
         }
 
         public async Task<IEnumerable<int>> AllIds()
-            => await this.db
+            => await this._context
                 .Articles
                 .Where(a => a.IsPublic)
                 .Select(a => a.Id)
                 .ToListAsync();
 
         public async Task<IEnumerable<ArticleForUserListingServiceModel>> ByUser(string userId)
-            => await this.db
+            => await this._context
                 .Articles
                 .Where(a => a.UserId == userId)
                 .OrderByDescending(a => a.PublishedOn)
                 .ProjectTo<ArticleForUserListingServiceModel>(Mapper.Configuration)
                 .ToListAsync();
 
+        /// <summary>
+        /// Verilen Id'ye karşılık gelen makalenin, id'si verilen kullanıcıya ait olup olmadığını dönderir.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="userId"></param>
+        /// <returns></returns>
         public async Task<bool> IsByUser(int id, string userId)
-            => await this.db
+            => await this._context
                 .Articles
                 .AnyAsync(a => a.Id == id && a.UserId == userId);
 
         public async Task<ArticleDetailsServiceModel> Details(int id)
-            => await this.db
+            => await this._context
                 .Articles
                 .Where(a => a.Id == id)
                 .ProjectTo<ArticleDetailsServiceModel>(Mapper.Configuration)
                 .FirstOrDefaultAsync();
 
         public async Task<int> Total()
-            => await this.db
+            => await this._context
                 .Articles
                 .Where(a => a.IsPublic)
                 .CountAsync();
@@ -87,16 +95,16 @@
                 UserId = userId
             };
 
-            this.db.Articles.Add(article);
+            this._context.Articles.Add(article);
 
-            await this.db.SaveChangesAsync();
+            await this._context.SaveChangesAsync();
 
             return article.Id;
         }
 
         public async Task Edit(int id, string title, string content)
         {
-            var article = await this.db.Articles.FindAsync(id);
+            var article = await this._context.Articles.FindAsync(id);
 
             if (article == null)
             {
@@ -107,20 +115,20 @@
             article.Content = content;
             article.IsPublic = false;
 
-            await this.db.SaveChangesAsync();
+            await this._context.SaveChangesAsync();
         }
 
         public async Task Delete(int id)
         {
-            var article = await this.db.Articles.FindAsync(id);
-            this.db.Articles.Remove(article);
+            var article = await this._context.Articles.FindAsync(id);
+            this._context.Articles.Remove(article);
 
-            await this.db.SaveChangesAsync();
+            await this._context.SaveChangesAsync();
         }
 
         public async Task ChangeVisibility(int id)
         {
-            var article = await this.db.Articles.FindAsync(id);
+            var article = await this._context.Articles.FindAsync(id);
 
             if (article == null)
             {
@@ -134,7 +142,7 @@
                 article.PublishedOn = DateTime.UtcNow;    
             }
 
-            await this.db.SaveChangesAsync();
+            await this._context.SaveChangesAsync();
         }
     }
 }
