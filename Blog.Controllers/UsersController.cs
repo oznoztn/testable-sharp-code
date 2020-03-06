@@ -1,4 +1,6 @@
-﻿namespace Blog.Controllers
+﻿using System.IO;
+
+namespace Blog.Controllers
 {
     using System.Threading.Tasks;
     using Microsoft.AspNetCore.Authorization;
@@ -10,10 +12,12 @@
     public class UsersController : Controller
     {
         private readonly IImageService _imageService;
+        private readonly IFileSystemService _fileSystemService;
 
-        public UsersController(IImageService imageService)
+        public UsersController(IImageService imageService, IFileSystemService fileSystemService)
         {
             _imageService = imageService;
+            _fileSystemService = fileSystemService;
         }
 
         private const string UserImageDestination = @"Images\Users\{0}";
@@ -23,11 +27,12 @@
         [HttpGet]
         public async Task<IActionResult> GetProfilePicture()
         {
-            var userImageDestination = string.Format(
-                $"{UserImageDestination}_optimized.jpg", 
-                this.User.Identity.Name);
+            var userImageDestination = 
+                string.Format(
+                    $"{UserImageDestination}_optimized.jpg",
+                    this.User.Identity.Name);
 
-            await using var file = FileSystem.OpenRead(userImageDestination);
+            await using Stream file = _fileSystemService.OpenRead(userImageDestination);
 
             return this.File(file, ImageContentType);
         }

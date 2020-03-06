@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Blog.Controllers;
+using Blog.Services;
 using Blog.Tests.Extensions;
 using Blog.Tests.Fakes;
 using Microsoft.AspNetCore.Http;
@@ -14,11 +16,15 @@ namespace Blog.Tests
 {
     public class UserControllerTests
     {
+        /// <summary>
+        /// Test username is "TESTUSER".
+        /// </summary>
+        public const string TestUser = "TESTUSER";
         [Fact]
         public async Task ChangeProfilePictureShouldReturnBadRequestWhenPictureUrlIsNull()
         {
             // arrange
-            UsersController usersController = new UsersController(new FakeImageService());
+            UsersController usersController = new UsersController(new FakeImageService(), null);
 
             // act
             var result = await usersController.ChangeProfilePicture(null);
@@ -35,7 +41,7 @@ namespace Blog.Tests
             const string username = "test_user";
 
             var usersCtrl = 
-                new UsersController(new FakeImageService())
+                new UsersController(new FakeImageService(), null)
                     .WithClaimPrincipal(username);
             
             // act
@@ -43,6 +49,22 @@ namespace Blog.Tests
 
             // assert
             Assert.IsType<OkResult>(result);
+        }
+
+        [Fact]
+        public async Task GetProfilePictureShouldReturnFileStreamResult()
+        {
+            // ARRANGE
+            var fakeFileSystemService = new FakeFileSystemService();
+            var usersController =
+                new UsersController(null, fakeFileSystemService)
+                    .WithClaimPrincipal(TestUser);
+            // ACT
+
+            IActionResult result = await usersController.GetProfilePicture();
+
+            // ASSERT
+            Assert.IsType<FileStreamResult>(result);
         }
     }
 }
