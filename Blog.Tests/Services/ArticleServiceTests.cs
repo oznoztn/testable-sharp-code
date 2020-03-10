@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 using Blog.Data;
 using Blog.Data.Models;
 using Blog.Services;
+using Blog.Tests.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Xunit;
@@ -18,25 +20,16 @@ namespace Blog.Tests.Services
             // ARRANGE
             const int articleId = 1;
             const string userId = "1";
+            const string database = "IsByUserShouldReturnTrueWhenArticleByTheSpecificUserExists";
 
-            var optionsBuilder = new DbContextOptionsBuilder<BlogDbContext>();
-            optionsBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
-
-            await using (var context = new BlogDbContext(optionsBuilder.Options))
+            await using (var context = new FakeDbContext(database))
             {
-                context.Articles.Add(new Article()
-                {
-                    Id = 1,
-                    UserId = "1",
-                    Title = "Test Article 1"
-                });
-
-                context.SaveChanges();
+                await context.SeedArticles(3);
             }
 
             // ACT
             bool result;
-            await using (var context = new BlogDbContext(optionsBuilder.Options))
+            await using (var context = new FakeDbContext(database))
             {
                 var articleService = new ArticleService(context);
 
@@ -52,26 +45,17 @@ namespace Blog.Tests.Services
         {
             // ARRANGE
             const int articleId = 1;
-            const string userId = "101";
+            const string userId = "10000";
+            const string database = "IsByUserShouldReturnFalseWhenTheUserDoesntHaveArticleWithGivenArticleId";
 
-            var optionsBuilder = new DbContextOptionsBuilder<BlogDbContext>();
-            optionsBuilder.UseInMemoryDatabase(Guid.NewGuid().ToString());
-
-            await using (var context = new BlogDbContext(optionsBuilder.Options))
+            await using (var context = new FakeDbContext(database))
             {
-                context.Articles.Add(new Article()
-                {
-                    Id = 1,
-                    UserId = "1",
-                    Title = "Test Article 1"
-                });
-
-                await context.SaveChangesAsync();
+                await context.SeedArticles(3);
             }
 
             // ACT
             bool result;
-            await using (var context = new BlogDbContext(optionsBuilder.Options))
+            await using (var context = new FakeDbContext(database))
             {
                 var articleService = new ArticleService(context);
 
