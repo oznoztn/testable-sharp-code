@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Blog.Data;
 using Blog.Data.Models;
 using Blog.Services;
+using Blog.Services.Infrastructure;
 using Blog.Tests.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -31,7 +35,7 @@ namespace Blog.Tests.Services
             bool result;
             await using (var context = new FakeDbContext(database))
             {
-                var articleService = new ArticleService(context);
+                var articleService = new ArticleService(context, null);
 
                 result = await articleService.IsByUser(articleId, userId);
             }
@@ -57,7 +61,7 @@ namespace Blog.Tests.Services
             bool result;
             await using (var context = new FakeDbContext(database))
             {
-                var articleService = new ArticleService(context);
+                var articleService = new ArticleService(context, null);
 
                 result = await articleService.IsByUser(articleId, userId);
             }
