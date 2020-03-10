@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading.Tasks;
@@ -35,7 +36,7 @@ namespace Blog.Tests.Services
             bool result;
             await using (var context = new FakeDbContext(database))
             {
-                var articleService = new ArticleService(context, null);
+                var articleService = new ArticleService(context, null, null);
 
                 result = await articleService.IsByUser(articleId, userId);
             }
@@ -61,7 +62,7 @@ namespace Blog.Tests.Services
             bool result;
             await using (var context = new FakeDbContext(database))
             {
-                var articleService = new ArticleService(context, null);
+                var articleService = new ArticleService(context, null, null);
 
                 result = await articleService.IsByUser(articleId, userId);
             }
@@ -86,7 +87,7 @@ namespace Blog.Tests.Services
             }));
 
             await using var context2 = new FakeDbContext(database);
-            var articleService = new ArticleService(context2, mapper);
+            var articleService = new ArticleService(context2, mapper, null);
 
             var articles = await articleService.All();
 

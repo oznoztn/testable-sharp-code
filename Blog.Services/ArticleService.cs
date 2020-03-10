@@ -15,11 +15,13 @@
     {
         private readonly BlogDbContext _context;
         private readonly IMapper _mapper;
+        private readonly IDateTimeService _dateTimeService;
 
-        public ArticleService(BlogDbContext context, IMapper mapper)
+        public ArticleService(BlogDbContext context, IMapper mapper, IDateTimeService dateTimeService)
         {
             _context = context;
             _mapper = mapper;
+            _dateTimeService = dateTimeService;
         }
 
         public async Task<IEnumerable<ArticleListingServiceModel>> All(
@@ -141,7 +143,7 @@
 
             if (article.PublishedOn == null)
             {
-                article.PublishedOn = DateTime.UtcNow;    
+                article.PublishedOn = _dateTimeService.Now();
             }
 
             await this._context.SaveChangesAsync();
