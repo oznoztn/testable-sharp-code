@@ -69,5 +69,28 @@ namespace Blog.Tests.Services
             // ASSERT
             Assert.False(result);
         }
+
+        [Fact]
+        public async Task AllShouldReturnCorrectNumberOfArticles()
+        {
+            // arrange
+            const string database = "asdfasdfasdfasdfasdfasdfasdf";
+
+            await using var context = new FakeDbContext(database);
+            await context.SeedArticles(3);
+
+            // act
+            var mapper = new Mapper(new MapperConfiguration(conf =>
+            {
+                conf.AddProfile<ServiceMappingProfile>();
+            }));
+
+            await using var context2 = new FakeDbContext(database);
+            var articleService = new ArticleService(context2, mapper);
+
+            var articles = await articleService.All();
+
+            Assert.Equal(3, articles.ToArray().Length);
+        }
     }
 }
