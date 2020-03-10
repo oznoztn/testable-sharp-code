@@ -93,5 +93,33 @@ namespace Blog.Tests.Services
 
             Assert.Equal(3, articles.ToArray().Length);
         }
+
+        [Fact]
+        public async Task ChangeVisibilityShoulSetCorrectPublishedOnDate()
+        {
+            // arrange
+            await using FakeDbContext context =
+                new FakeDbContext("ChangeVisibilityShoulSetCorrectPublishedOnDate");
+            await context.SeedArticles(1);
+            
+            var dateTimeService = new FakeDateTimeService();
+            dateTimeService.DateTime = new DateTime(2001, 1, 1, 1, 1, 1);
+
+            var service =
+                new ArticleService(
+                    context,
+                    null,
+                    dateTimeService);
+
+            // act
+            await service.ChangeVisibility(1);
+
+            await using FakeDbContext context2 =
+                new FakeDbContext("ChangeVisibilityShoulSetCorrectPublishedOnDate");
+
+            var article = await context2.Articles.FirstOrDefaultAsync(t => t.Id == 1);
+
+            Assert.Equal(dateTimeService.DateTime, article.PublishedOn);
+        }
     }
 }
