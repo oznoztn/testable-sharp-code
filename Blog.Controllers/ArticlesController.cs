@@ -16,28 +16,26 @@
         private readonly IArticleService articleService;
         private readonly IMapper mapper;
 
-        private readonly int articlePageSize;
+        private readonly int _articlePageSize;
 
         public ArticlesController(
             IArticleService articleService,
-            IMapper mapper)
+            IMapper mapper,
+            IConfiguration configuration)
         {
             this.articleService = articleService;
             this.mapper = mapper;
 
-            var configuration = new ConfigurationBuilder()
-                .AddJsonFile("appsettings.json")
-                .Build();
-
-            this.articlePageSize = configuration
-                .GetSection("Articles")
-                .GetValue<int>("PageSize");
+            _articlePageSize = 
+                configuration
+                    .GetSection("Articles")
+                    .GetValue<int>("PageSize");
         }
 
         public async Task<IActionResult> All([FromQuery]int page = 1) 
             => this.View(new ArticleListingViewModel
             {
-                Articles = await this.articleService.All(page, this.articlePageSize),
+                Articles = await this.articleService.All(page, _articlePageSize),
                 Total = await this.articleService.Total(),
                 Page = page
             });
