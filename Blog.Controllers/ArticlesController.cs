@@ -13,8 +13,8 @@
 
     public class ArticlesController : Controller
     {
-        private readonly IArticleService articleService;
-        private readonly IMapper mapper;
+        private readonly IArticleService _articleService;
+        private readonly IMapper _mapper;
 
         private readonly int _articlePageSize;
 
@@ -23,8 +23,8 @@
             IMapper mapper,
             IConfiguration configuration)
         {
-            this.articleService = articleService;
-            this.mapper = mapper;
+            this._articleService = articleService;
+            this._mapper = mapper;
 
             _articlePageSize = 
                 configuration
@@ -35,14 +35,14 @@
         public async Task<IActionResult> All([FromQuery]int page = 1) 
             => this.View(new ArticleListingViewModel
             {
-                Articles = await this.articleService.All(page, _articlePageSize),
-                Total = await this.articleService.Total(),
+                Articles = await this._articleService.All(page, _articlePageSize),
+                Total = await this._articleService.Total(),
                 Page = page
             });
 
         public async Task<IActionResult> Details(int id)
         {
-            var article = await this.articleService.Details(id);
+            var article = await this._articleService.Details(id);
 
             if (article == null)
             {
@@ -59,11 +59,9 @@
             return this.View(article);
         }
 
-        public async Task<IActionResult> Random()
+        public async Task<IActionResult> Random([FromServices]IRandomValueProvider random)
         {
-            var ids = (await this.articleService.AllIds()).ToList();
-
-            var random = new Random();
+            var ids = (await this._articleService.AllIds()).ToList();
 
             var randomId = ids[random.Next(0, ids.Count)];
 
@@ -80,7 +78,7 @@
         {
             if (this.ModelState.IsValid)
             {
-                await this.articleService.Add(article.Title, article.Content, this.User.GetId());
+                await this._articleService.Add(article.Title, article.Content, this.User.GetId());
 
                 this.TempData.Add(ControllerConstants.SuccessMessage, "Article created successfully it is waiting for approval!");
 
@@ -94,14 +92,14 @@
         [Authorize]
         public async Task<IActionResult> Edit(int id)
         {
-            var article = await this.articleService.Details(id);
+            var article = await this._articleService.Details(id);
 
             if (article == null || (article.Author != this.User.Identity.Name && !this.User.IsAdministrator()))
             {
                 return this.NotFound();
             }
 
-            var articleEdit = this.mapper.Map<ArticleFormModel>(article);
+            var articleEdit = this._mapper.Map<ArticleFormModel>(article);
 
             return this.View(articleEdit);
         }
@@ -110,14 +108,14 @@
         [Authorize]
         public async Task<IActionResult> Edit(int id, ArticleFormModel article)
         {
-            if (!await this.articleService.IsByUser(id, this.User.GetId()) && !this.User.IsAdministrator())
+            if (!await this._articleService.IsByUser(id, this.User.GetId()) && !this.User.IsAdministrator())
             {
                 return this.NotFound();
             }
             
             if (this.ModelState.IsValid)
             {
-                await this.articleService.Edit(id, article.Title, article.Content);
+                await this._articleService.Edit(id, article.Title, article.Content);
 
                 this.TempData.Add(ControllerConstants.SuccessMessage, "Article edited successfully and is waiting for approval!");
 
@@ -130,7 +128,7 @@
         [Authorize]
         public async Task<IActionResult> Delete(int id)
         {
-            if (!await this.articleService.IsByUser(id, this.User.GetId()) && !this.User.IsAdministrator())
+            if (!await this._articleService.IsByUser(id, this.User.GetId()) && !this.User.IsAdministrator())
             {
                 return this.NotFound();
             }
@@ -141,12 +139,12 @@
         [Authorize]
         public async Task<IActionResult> ConfirmDelete(int id)
         {
-            if (!await this.articleService.IsByUser(id, this.User.GetId()) && !this.User.IsAdministrator())
+            if (!await this._articleService.IsByUser(id, this.User.GetId()) && !this.User.IsAdministrator())
             {
                 return this.NotFound();
             }
 
-            await this.articleService.Delete(id);
+            await this._articleService.Delete(id);
             
             this.TempData.Add(ControllerConstants.SuccessMessage, "Article deleted successfully!");
 
@@ -156,7 +154,7 @@
         [Authorize]
         public async Task<IActionResult> Mine()
         {
-            var articles = await this.articleService.ByUser(this.User.GetId());
+            var articles = await this._articleService.ByUser(this.User.GetId());
 
             return this.View(articles);
         }
